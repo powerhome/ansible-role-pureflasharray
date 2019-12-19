@@ -1,0 +1,122 @@
+---
+# tasks file for purefa
+- name: Collect array information
+  purefa_info:
+    gather_subset:
+      - minimum
+      - config
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  register: array_info
+
+- name: Manage array name
+  purefa_arrayname:
+    name: "{{ purefa_array_name }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when: purefa_array_name is defined
+  tags:
+  - purefa_array_name
+
+- name: Manage Phonehome
+  purefa_phonehome:
+    state: "{{ purefa_phonehome_state }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  tags:
+  - purefa_phonehome
+
+- name: Manage Remote Assist port
+  purefa_ra:
+    state: "{{ purefa_remote_assist_state }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when: purefa_remote_assist_state is defined
+  tags:
+  - purefa_ra
+
+- name: Set NTP server addresses
+  purefa_ntp:
+    state: "{{ purefa_ntp_state | default('present')}}"
+    ntp_servers: "{{ purefa_ntp_servers }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  tags:
+  - purefa_ntp
+
+- name: Set DNS server addresses
+  purefa_dns:
+    state: "{{ purefa_dns_state | default('present')}}"
+    domain: "{{ purefa_domain }}"
+    nameservers: "{{ purefa_dns_servers }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  tags:
+  - purefa_dns
+
+- name: Manage local users
+  purefa_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password}}"
+    old_password: "{{ item.old_password | default(omit) }}"
+    role: "{{ item.role | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_users }}"
+  tags:
+  - purefa_users
+
+- name: Manage directory service
+  include_tasks: directory_service.yml
+  when: purefa_ldap is defined and purefa_ldap_bind_password is defined
+  tags:
+  - purefa_ldap
+
+# module is not idempotent
+- name: Manage v2c SNMP manager
+  purefa_snmp:
+    state: "{{ item.state | default('present') }}"
+    name: "{{ item.name }}"
+    community: "{{ item.community }}"
+    host: "{{ item.host }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_snmp }}"
+  tags:
+  - purefa_snmp
+
+- name: Set array syslog servers
+  purefa_syslog:
+    state: "{{ purefa_syslog.state | default('present')}}"
+    address: "{{ purefa_syslog.address }}"
+    port: "{{ purefa_syslog.port }}"
+    protocol: "{{ purefa_syslog.protocol }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  tags:
+  - purefa_syslog
+
+- name: Set SMTP settings
+  purefa_smtp:
+    state: "{{ purefa_smtp.state | default('present')}}"
+    sender_domain: "{{ purefa_domain }}"
+    password: "{{ purefa_smtp.password }}"
+    user: "{{ purefa_smtp.user }}"
+    relay_host: "{{ purefa_smtp.relay_host }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  tags:
+  - purefa_smtp
+
+- name: Manage email recipients alerts
+  purefa_alert:
+    address: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_alerts }}"
+  # smtp config need to be different to run (module isnt idempotent)
+  when: item not in array_info.purefa_info.config.smtp
+  tags:
+  - purefa_alerts

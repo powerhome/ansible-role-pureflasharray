@@ -1,0 +1,67 @@
+---
+- name: directory service pre-5.2.0
+  purefa_ds:
+    enable: "{{ purefa_ldap.enable }}"
+    uri: "{{ purefa_ldap.uri }}"
+    base_dn: "{{ purefa_ldap.base_dn }}"
+    bind_user: "{{ purefa_ldap.bind_user }}"
+    bind_password: "{{ purefa_ldap_bind_password }}"
+    group_base: "{{ purefa_ldap.group_base }}"
+    state: "{{ purefa_ldap.state | default('present')}}"
+    aa_group: "{{ purefa_ldap.aa_group | default(omit)}}"
+    sa_group: "{{ purefa_ldap.sa_group | default(omit)}}"
+    ro_group: "{{ purefa_ldap.sa_group | default(omit)}}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when: array_info.purefa_info.default.purity_version < '5.2.0'
+
+- name: directory service 5.2.0 or higher
+  block:
+  - name: Manage directory 5.2.0 or higher
+    purefa_ds:
+      enable: "{{ purefa_ldap.enable }}"
+      uri: "{{ purefa_ldap.uri }}"
+      base_dn: "{{ purefa_ldap.base_dn }}"
+      bind_user: "{{ purefa_ldap.bind_user }}"
+      bind_password: "{{ purefa_ldap_bind_password }}"
+      group_base: "{{ purefa_ldap.group_base }}"
+      state: "{{ purefa_ldap.state | default('present')}}"
+      fa_url: "{{ purefa_url }}"
+      api_token: "{{ purefa_api_token }}"
+
+  - name: Manage array admin role 5.2.0 or higher
+    purefa_dsrole:
+      role: array_admin
+      group_base: "{{ purefa_ldap.group_base }}"
+      group: "{{ purefa_ldap.aa_group }}"
+      state: "{{ 'present' if purefa_ldap.aa_group is defined else 'absent' }}"
+      fa_url: "{{ purefa_url }}"
+      api_token: "{{ purefa_api_token }}"
+
+  - name: Manage storage admin role 5.2.0 or higher
+    purefa_dsrole:
+      role: storage_admin
+      group_base: "{{ purefa_ldap.group_base }}"
+      group: "{{ purefa_ldap.sa_group }}"
+      state: "{{ 'present' if purefa_ldap.sa_group is defined else 'absent' }}"
+      fa_url: "{{ purefa_url }}"
+      api_token: "{{ purefa_api_token }}"
+
+  - name: Manage ops admin role 5.2.0 or higher
+    purefa_dsrole:
+      role: ops_admin
+      group_base: "{{ purefa_ldap.group_base }}"
+      group: "{{ purefa_ldap.oa_group }}"
+      state: "{{ 'present' if purefa_ldap.oa_group is defined else 'absent' }}"
+      fa_url: "{{ purefa_url }}"
+      api_token: "{{ purefa_api_token }}"
+
+  - name: Manage readonly role 5.2.0 or higher
+    purefa_dsrole:
+      role: readonly
+      group_base: "{{ purefa_ldap.group_base }}"
+      group: "{{ purefa_ldap.ro_group }}"
+      state: "{{ 'present' if purefa_ldap.ro_group is defined else 'absent' }}"
+      fa_url: "{{ purefa_url }}"
+      api_token: "{{ purefa_api_token }}"
+  when: array_info.purefa_info.default.purity_version >= '5.2.0'

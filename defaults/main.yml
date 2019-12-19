@@ -1,0 +1,61 @@
+---
+# defaults file for purefa
+purefa_url: purefa.com
+purefa_api_token: token
+
+purefa_domain: pure.com
+
+purefa_array_name: pure
+
+purefa_phonehome_state: present # present/absent
+# purefa_remote_assist_state: disable # enable/disable
+
+purefa_ntp_state: absent # present/absent
+purefa_ntp_servers:
+- ntp1.com
+
+purefa_dns_state: absent # present/absent
+purefa_dns_servers:
+- "8.8.8.8"
+
+purefa_users:
+- name: pureuser
+  password: pureuser
+  role: array_admin # array_admin/storage_admin/readonly
+  # old_password: old_pass
+  # state: present
+
+purefa_ldap_bind_password: bind_pass
+purefa_ldap:
+  enable: true
+  state: absent # present/absent
+  uri: "ldap://ldap.com"
+  base_dn: "DC=ldap,DC=com"
+  bind_user: "CN=reader,DC=ldap,DC=com"
+  group_base: "OU=groups"
+  aa_group: PureAdmins # array admins
+  sa_group: PureAdmins # storage admins
+  oa_group: PureAdmins # ops admins
+  ro_group: PureAdmins # readonly
+
+purefa_snmp:
+- name: public
+  community: pws
+  host: 0.0.0.0
+  state: absent
+
+purefa_syslog:
+  state: absent
+  address: syslog.com
+  port: 514
+  protocol: udp # tcp, tls, udp
+
+purefa_smtp:
+  state: absent # present/absent
+  password: ""
+  user: ""
+  relay_host: mail.com:587
+
+purefa_alerts:
+- name: "flasharray-alerts@purestorage.com"
+  enabled: true
