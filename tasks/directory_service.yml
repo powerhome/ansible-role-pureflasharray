@@ -1,6 +1,6 @@
 ---
 - name: directory service pre-5.2.0
-  purefa_ds:
+  purestorage.flasharray.purefa_ds:
     enable: "{{ purefa_ldap.enable }}"
     uri: "{{ purefa_ldap.uri }}"
     base_dn: "{{ purefa_ldap.base_dn }}"
@@ -18,7 +18,7 @@
 - name: directory service 5.2.0 or higher
   block:
   - name: Manage directory 5.2.0 or higher
-    purefa_ds:
+    purestorage.flasharray.purefa_ds:
       enable: "{{ purefa_ldap.enable }}"
       uri: "{{ purefa_ldap.uri }}"
       base_dn: "{{ purefa_ldap.base_dn }}"
@@ -30,7 +30,7 @@
       api_token: "{{ purefa_api_token }}"
 
   - name: Manage array admin role 5.2.0 or higher
-    purefa_dsrole:
+    purestorage.flasharray.purefa_dsrole:
       role: array_admin
       group_base: "{{ purefa_ldap.group_base }}"
       group: "{{ purefa_ldap.aa_group }}"
@@ -39,7 +39,7 @@
       api_token: "{{ purefa_api_token }}"
 
   - name: Manage storage admin role 5.2.0 or higher
-    purefa_dsrole:
+    purestorage.flasharray.purefa_dsrole:
       role: storage_admin
       group_base: "{{ purefa_ldap.group_base }}"
       group: "{{ purefa_ldap.sa_group }}"
@@ -48,7 +48,7 @@
       api_token: "{{ purefa_api_token }}"
 
   - name: Manage ops admin role 5.2.0 or higher
-    purefa_dsrole:
+    purestorage.flasharray.purefa_dsrole:
       role: ops_admin
       group_base: "{{ purefa_ldap.group_base }}"
       group: "{{ purefa_ldap.oa_group }}"
@@ -57,7 +57,7 @@
       api_token: "{{ purefa_api_token }}"
 
   - name: Manage readonly role 5.2.0 or higher
-    purefa_dsrole:
+    purestorage.flasharray.purefa_dsrole:
       role: readonly
       group_base: "{{ purefa_ldap.group_base }}"
       group: "{{ purefa_ldap.ro_group }}"

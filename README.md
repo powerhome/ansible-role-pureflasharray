@@ -22,10 +22,13 @@ PS: This role isn't tested with molecule since there isn't a way to provision a 
 Requirements
 ------------
 
-* `python 3`
-* `purestorage 1.18.1`
+* `pipenv`
+
+Execute the following to install dependencies:
 ```sh
-pip install purestorage
+pipenv install
+pipenv shell
+ansible-galaxy collection install -r requirements.yaml
 ```
 
 Role Variables
@@ -48,9 +51,14 @@ Example Playbook
 Including an example of how to use your role (for instance, with variables
 passed in as parameters) is always nice for users too:
 ```yaml
-    - hosts: servers
-      roles:
-         - { role: powerhome.purefa, purefa_url: pure.com, purefa_api_token: api_token }
+- hosts: servers
+  collections:
+  - purestorage.flasharray
+  roles:
+  - name: powerhome.purefa
+    vars:
+      purefa_url: pure.com
+      purefa_api_token: api_token
 ```
 
 License

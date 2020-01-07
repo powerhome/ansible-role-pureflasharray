@@ -1,7 +1,7 @@
 ---
 # tasks file for purefa
 - name: Collect array information
-  purefa_info:
+  purestorage.flasharray.purefa_info:
     gather_subset:
       - minimum
       - config
@@ -10,7 +10,7 @@
   register: array_info
 
 - name: Manage array name
-  purefa_arrayname:
+  purestorage.flasharray.purefa_arrayname:
     name: "{{ purefa_array_name }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
@@ -19,7 +19,7 @@
   - purefa_array_name
 
 - name: Manage Phonehome
-  purefa_phonehome:
+  purestorage.flasharray.purefa_phonehome:
     state: "{{ purefa_phonehome_state }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
@@ -27,7 +27,7 @@
   - purefa_phonehome
 
 - name: Manage Remote Assist port
-  purefa_ra:
+  purestorage.flasharray.purefa_ra:
     state: "{{ purefa_remote_assist_state }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
@@ -36,7 +36,7 @@
   - purefa_ra
 
 - name: Set NTP server addresses
-  purefa_ntp:
+  purestorage.flasharray.purefa_ntp:
     state: "{{ purefa_ntp_state | default('present')}}"
     ntp_servers: "{{ purefa_ntp_servers }}"
     fa_url: "{{ purefa_url }}"
@@ -45,7 +45,7 @@
   - purefa_ntp
 
 - name: Set DNS server addresses
-  purefa_dns:
+  purestorage.flasharray.purefa_dns:
     state: "{{ purefa_dns_state | default('present')}}"
     domain: "{{ purefa_domain }}"
     nameservers: "{{ purefa_dns_servers }}"
@@ -55,7 +55,7 @@
   - purefa_dns
 
 - name: Manage local users
-  purefa_user:
+  purestorage.flasharray.purefa_user:
     name: "{{ item.name }}"
     password: "{{ item.password}}"
     old_password: "{{ item.old_password | default(omit) }}"
@@ -75,7 +75,7 @@
 
 # module is not idempotent
 - name: Manage v2c SNMP manager
-  purefa_snmp:
+  purestorage.flasharray.purefa_snmp:
     state: "{{ item.state | default('present') }}"
     name: "{{ item.name }}"
     community: "{{ item.community }}"
@@ -87,7 +87,7 @@
   - purefa_snmp
 
 - name: Set array syslog servers
-  purefa_syslog:
+  purestorage.flasharray.purefa_syslog:
     state: "{{ purefa_syslog.state | default('present')}}"
     address: "{{ purefa_syslog.address }}"
     port: "{{ purefa_syslog.port }}"
@@ -98,7 +98,7 @@
   - purefa_syslog
 
 - name: Set SMTP settings
-  purefa_smtp:
+  purestorage.flasharray.purefa_smtp:
     state: "{{ purefa_smtp.state | default('present')}}"
     sender_domain: "{{ purefa_domain }}"
     password: "{{ purefa_smtp.password }}"
@@ -110,7 +110,7 @@
   - purefa_smtp
 
 - name: Manage email recipients alerts
-  purefa_alert:
+  purestorage.flasharray.purefa_alert:
     address: "{{ item.name }}"
     enabled: "{{ item.enabled }}"
     fa_url: "{{ purefa_url }}"
