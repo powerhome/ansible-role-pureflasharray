@@ -1,2 +1,0 @@
-ansible==2.9.2
-purestorage==1.18.1
