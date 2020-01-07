@@ -32,8 +32,8 @@
   - name: Manage array admin role 5.2.0 or higher
     purestorage.flasharray.purefa_dsrole:
       role: array_admin
-      group_base: "{{ purefa_ldap.group_base }}"
-      group: "{{ purefa_ldap.aa_group }}"
+      group_base: "{{ purefa_ldap.group_base if purefa_ldap.aa_group is defined else omit }}"
+      group: "{{ purefa_ldap.aa_group | default(omit) }}"
       state: "{{ 'present' if purefa_ldap.aa_group is defined else 'absent' }}"
       fa_url: "{{ purefa_url }}"
       api_token: "{{ purefa_api_token }}"
@@ -41,8 +41,8 @@
   - name: Manage storage admin role 5.2.0 or higher
     purestorage.flasharray.purefa_dsrole:
       role: storage_admin
-      group_base: "{{ purefa_ldap.group_base }}"
-      group: "{{ purefa_ldap.sa_group }}"
+      group_base: "{{ purefa_ldap.group_base if purefa_ldap.sa_group is defined else omit }}"
+      group: "{{ purefa_ldap.sa_group | default(omit) }}"
       state: "{{ 'present' if purefa_ldap.sa_group is defined else 'absent' }}"
       fa_url: "{{ purefa_url }}"
       api_token: "{{ purefa_api_token }}"
@@ -50,8 +50,8 @@
   - name: Manage ops admin role 5.2.0 or higher
     purestorage.flasharray.purefa_dsrole:
       role: ops_admin
-      group_base: "{{ purefa_ldap.group_base }}"
-      group: "{{ purefa_ldap.oa_group }}"
+      group_base: "{{ purefa_ldap.group_base if purefa_ldap.oa_group is defined else omit }}"
+      group: "{{ purefa_ldap.oa_group | default(omit) }}"
       state: "{{ 'present' if purefa_ldap.oa_group is defined else 'absent' }}"
       fa_url: "{{ purefa_url }}"
       api_token: "{{ purefa_api_token }}"
@@ -59,8 +59,8 @@
   - name: Manage readonly role 5.2.0 or higher
     purestorage.flasharray.purefa_dsrole:
       role: readonly
-      group_base: "{{ purefa_ldap.group_base }}"
-      group: "{{ purefa_ldap.ro_group }}"
+      group_base: "{{ purefa_ldap.group_base if purefa_ldap.ro_group is defined else omit }}"
+      group: "{{ purefa_ldap.ro_group | default(omit) }}"
       state: "{{ 'present' if purefa_ldap.ro_group is defined else 'absent' }}"
       fa_url: "{{ purefa_url }}"
       api_token: "{{ purefa_api_token }}"
