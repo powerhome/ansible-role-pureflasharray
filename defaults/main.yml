@@ -65,3 +65,18 @@ purefa_alerts:
 #- target_url: otherflasharray.purestorage.com
 #  connection: async
 #  target_api: long-uuid-here
+
+#purefa_hostgroups:
+#- name: mygroup
+#  hosts:
+#  - name: myhost1
+#    iqn: iqn.1993-08.org.debian:01:xxxxxxxx
+#  - name: myhost2
+#    nqn: somenqn.com:xxxxxxx
+#    protocol: nvme
+#- name: myothergroup
+#  hosts:
+#  - name: myhost3
+#    wwns:
+#    - wwn-0x5002e10000000000
+#    - wwn-0x500277a4100c4e21

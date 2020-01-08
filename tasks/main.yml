@@ -140,3 +140,34 @@
   when: purefa_connections is defined
   tags:
   - purefa_connections
+
+- name: Manage hosts
+  purestorage.flasharray.purefa_host:
+    host: "{{ item.name }}"
+    lun: "{{ item.lun | default(omit) }}"
+    iqn: "{{ item.iqn | default(omit) }}"   # iscsi: iSCSI
+    nqn: "{{ item.nqn | default(omit) }}"   # nvme: NVMe
+    wwns: "{{ item.wwns | default(omit) }}" # fc: FibreChannel
+    personality: "{{ item.personality | default(omit) }}"
+    preferred_array: "{{ item.preferred_array | default('delete') }}"
+    protocol: "{{ item.protocol | default(omit) }}" # iscsi, nvme, fc or mixed
+    state: "{{ item.state | default ('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_hostgroups | json_query('[].hosts') | flatten }}"
+  when: purefa_hostgroups is defined
+  tags:
+  - purefa_host
+
+- name: Manage host groups
+  purestorage.flasharray.purefa_hg:
+    host: "{{ item.hosts | json_query('[].name') or omit }}"
+    hostgroup: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    volume: "{{ item.volumes | default(omit) }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_hostgroups }}"
+  when: purefa_hostgroups is defined
+  tags:
+  - purefa_hostgroups
