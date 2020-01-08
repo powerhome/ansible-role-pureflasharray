@@ -60,3 +60,8 @@
 purefa_alerts:
 - name: "flasharray-alerts@purestorage.com"
   enabled: true
+
+#purefa_connections:
+#- target_url: otherflasharray.purestorage.com
+#  connection: async
+#  target_api: long-uuid-here

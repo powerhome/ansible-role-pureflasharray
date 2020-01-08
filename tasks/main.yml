@@ -127,3 +127,16 @@
   when: item not in array_info.purefa_info.config.smtp
   tags:
   - purefa_alerts
+
+- name: Manage replication connections
+  purestorage.flasharray.purefa_connect:
+    connection: "{{ item.connection | default('async') }}"
+    target_url: "{{ item.target_url }}"
+    target_api: "{{ item.target_api }}"
+    state: "{{ item.state | default('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_connections }}"
+  when: purefa_connections is defined
+  tags:
+  - purefa_connections
