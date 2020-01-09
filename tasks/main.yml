@@ -141,6 +141,25 @@
   tags:
   - purefa_connections
 
+- name: Manage volume groups
+  purestorage.flasharray.purefa_vg:
+    vgroup: "{{ item.name }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_volumegroups }}"
+  when: purefa_volumegroups is defined
+  tags:
+  - purefa_volumegroups
+
+- name: Manage volumes
+  purestorage.flasharray.purefa_volume:
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_volumegroups }}"
+  when: purefa_volumegroups is defined
+  tags:
+  - purefa_volume
+
 - name: Manage hosts
   purestorage.flasharray.purefa_host:
     host: "{{ item.name }}"
