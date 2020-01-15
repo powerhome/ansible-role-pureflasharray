@@ -158,25 +158,25 @@
   loop: "{{ purefa_volumegroups }}"
   when: purefa_volumegroups is defined
   tags:
-  - purefa_volume
+  - purefa_volumes
 
 - name: Manage hosts
   purestorage.flasharray.purefa_host:
-    host: "{{ item.name }}"
-    lun: "{{ item.lun | default(omit) }}"
-    iqn: "{{ item.iqn | default(omit) }}"   # iscsi: iSCSI
-    nqn: "{{ item.nqn | default(omit) }}"   # nvme: NVMe
-    wwns: "{{ item.wwns | default(omit) }}" # fc: FibreChannel
-    personality: "{{ item.personality | default(omit) }}"
-    preferred_array: "{{ item.preferred_array | default('delete') }}"
-    protocol: "{{ item.protocol | default(omit) }}" # iscsi, nvme, fc or mixed
-    state: "{{ item.state | default ('present') }}"
+    host: "{{ item.1.name }}"
+    lun: "{{ item.1.lun | default(omit) }}"
+    iqn: "{{ item.1.iqn | default(omit) }}"   # iscsi: iSCSI
+    nqn: "{{ item.1.nqn | default(omit) }}"   # nvme: NVMe
+    wwns: "{{ item.1.wwns | default(omit) }}" # fc: FibreChannel
+    personality: "{{ item.1.personality | default(omit) }}"
+    preferred_array: "{{ item.1.preferred_array | default('delete') }}"
+    protocol: "{{ item.1.protocol | default(omit) }}" # iscsi, nvme, fc or mixed
+    state: "{{ item.1.state | default ('present') }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
-  loop: "{{ purefa_hostgroups | json_query('[].hosts') | flatten }}"
+  loop: "{{ purefa_hostgroups | subelements('hosts') }}"
   when: purefa_hostgroups is defined
   tags:
-  - purefa_host
+  - purefa_hosts
 
 - name: Manage host groups
   purestorage.flasharray.purefa_hg:
