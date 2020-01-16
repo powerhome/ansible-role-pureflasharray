@@ -199,3 +199,22 @@
   when: purefa_hostgroups is defined
   tags:
   - purefa_hostgroups
+
+- name: Manage protection groups
+  purestorage.flasharray.purefa_pg:
+    pgroup: "{{ item.pg_name | default(item.name)  }}"
+    target: "{{ item.pg_target | default(pgroup_target) }}"
+    # host: "{{ item.host | default(omit) }}" # list
+    # hostgroup: "{{ item.hostgroup | default(omit) }}" # list
+    volume: "{{ item.volumes | json_query('[].name') | map('regex_replace', '^(.*)$', item.name+'/\\1') | list }}" # list of volumes adding 'volumegroup/' as prefix
+    state: "{{ item.pg_state | default(omit) }}"
+    eradicate: "{{ item.pg_eradicate | default(omit) }}"
+    enabled: "{{ item.pg_enabled | default(omit) }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_volumegroups }}"
+  when:
+  - purefa_volumegroups is defined
+  - item.protection_group is defined and item.protection_group == True
+  tags:
+  - purefa_protectiongroups
