@@ -178,6 +178,7 @@ You can specify other parameter for `volume groups` and `volumes`:
 | purefa_volumegroups\[].volumes\[].eradicate | N     | bool | false | Define whether to eradicate the volume on delete or leave in trash. |
 | purefa_volumegroups\[].volumes\[].state     | N     | str | present | Define whether the volume should exist or not. |
 
+#### Protection group
 You can still specify `protection group` setting for each `volume group` for example (to enable replication and snapshot schedule):
 ```
 - name: test-vg
@@ -190,7 +191,6 @@ You can still specify `protection group` setting for each `volume group` for exa
 
 All the options are:
 
-
 | Variable | required | type | default | description |
 | -------- | -------- | ---- | ------- | ----------- |
 | purefa_volumegroups[].pg.pgroup    | N | str | volume group name | The name of the protection group. |
@@ -198,6 +198,71 @@ All the options are:
 | purefa_volumegroups[].pg.state     | N     | str | present | Define whether the volume group should exist or not. |
 | purefa_volumegroups[].pg.eradicate | N     | bool | false | Define whether to eradicate the protection group on delete and leave in trash. |
 | purefa_volumegroups[].pg.enabled   | N     | bool | true | Define whether to enabled snapshots for the protection group. |
+
+#### Schedule
+To manage a `protection group` schedules you can use the variables:
+* replication schedules - `purefa_volumegroups[].pg.replication`.
+* snapshot schedules - `purefa_volumegroups[].pg.snapshot`.
+
+as the example:
+
+```yml
+purefa_volumegroups:
+- name: test-vg
+  volumes:
+  - name: test-vol
+    size: 5G
+  pg:
+    replication:
+      enabled: true
+      frequency: 86400 # 1day
+      at: 12:0:00
+      retain_for: 86400 # 1day
+      per_day: 5
+      for_days: 3
+      blackout_start: 2AM
+      blackout_end: 5AM
+    snapshot:
+      enabled: true
+      frequency: 86400 # 12h
+      at: 15:30:00
+      retain_for: 5
+      per_day: 3
+      for_days: 7
+```
+
+This will generate the following configs in the `protection group` **test-vg**:
+```
+Snapshot Schedule
+  Enabled:True
+  Create a snapshot on source every 1 days at 3:30pm
+  Retain all snapshots on source for 5 seconds
+    then retain 3 snapshots per day for 7 more days
+
+Replication Schedule
+  Enabled:True
+  Replicate a snapshot to targets every 1 days at 12pm
+    except between 2am and 5am
+  Retain all snapshots on targets for 1 days
+    then retain 5 snapshots per day for 3 more days
+```
+
+| Variable | required | type | default | description |
+| -------- | -------- | ---- | ------- | ----------- |
+| purefa_volumegroups[].pg.replication.enabled         | N | bool | true | Enable the replication schedule configured. |
+| purefa_volumegroups[].pg.replication.frequency       | N | int | 3600 | Specifies the replication frequency in seconds. |
+| purefa_volumegroups[].pg.replication.at              | N | int |  | Specifies the preferred time, on the hour, at which to replicate the snapshots. Specifies the preferred time as HH:MM:SS, using 24-hour clock, at which to generate snapshots |
+| purefa_volumegroups[].pg.replication.per_day         | N | int | 1 | Specifies the number of snapshots to keep beyond (retain_for) during (for_days) period. Maximum number is 1440. |
+| purefa_volumegroups[].pg.replication.for_days        | N | int | 7 | Specifies the number of days to keep the (per_day) snapshots beyond the (retain_for) period before they are eradicated. Max retention period is 4000 days. |
+| purefa_volumegroups[].pg.replication.retain_for      | N | int | 86400 | Specifies the length of time, in seconds, to keep the replicated snapshots on the replication targets. Range is 1 - 34560000 seconds. |
+| purefa_volumegroups[].pg.replication.blackout_start  | N | str |  | Specifies the time at which to suspend replication. Provide a time in 12-hour AM/PM format, eg. 11AM. |
+| purefa_volumegroups[].pg.replication.blackout_end    | N | str |  | Specifies the time at which to restart replication. Provide a time in 12-hour AM/PM format, eg. 5PM. |
+| purefa_volumegroups[].pg.snapshot.enabled    | N | bool | true | Enable the snapshot schedule configured. |
+| purefa_volumegroups[].pg.snapshot.frequency  | N | int | 3600 | Specifies the snapshot frequency in seconds. |
+| purefa_volumegroups[].pg.snapshot.at         | N | int |  | Specifies the preferred time as HH:MM:SS, using 24-hour clock, at which to generate snapshots. Only valid if I(snap_frequency) is an exact multiple of 86400, ie 1 day.
+| purefa_volumegroups[].pg.snapshot.per_day    | N | int | 1 | Specifies the number of snapshots to keep beyond (retain_for) during (for_days) period. Maximum number is 1440. |
+| purefa_volumegroups[].pg.snapshot.for_days   | N | int | 7 | Specifies the number of days to keep the (per_day) snapshots beyond the (retain_for) period before they are eradicated. Max retention period is 4000 days. |
+| purefa_volumegroups[].pg.snapshot.retain_for | N | int | 86400 | Specifies the length of time, in seconds, to keep the replicated snapshots on the replication targets. Range is 1 - 34560000 seconds. |
 
 
 ### Hosts
