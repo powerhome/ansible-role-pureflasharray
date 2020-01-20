@@ -2,44 +2,42 @@
   purestorage.flasharray.purefa_pg:
     pgroup: "{{ item.pg.name | default(item.name) }}"
     target: "{{ item.pg.target | default(pgroup_target) }}"
-    # host: "{{ item.host | default(omit) }}" # list
-    # hostgroup: "{{ item.hostgroup | default(omit) }}" # list
     volume: "{{ item.volumes | json_query('[].name') | map('regex_replace', '^(.*)$', item.name+'/\\1') | list }}" # list of volumes adding 'volumegroup/' as prefix
-    state: "{{ item.pg.state | default(omit) }}"
-    eradicate: "{{ item.pg.eradicate | default(omit) }}"
-    enabled: "{{ item.pg.enabled | default(omit) }}"
+    state: "{{ item.pg.state | default('present') }}"
+    eradicate: "{{ item.pg.eradicate | default('false') }}"
+    enabled: "{{ item.pg.enabled | default('true') }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
   when: item.pg is defined
 
-- name: Update protection group replication schedule
-  purestorage.flasharray.purefa_pgsched:
-    name: "{{ item.pg.name | default(item.name) }}"
-    schedule: replication
-    enabled: "{{ item.pg.replication.enabled }}"
-    replicate_frequency: "{{ item.pg.replication.frequency }}"
-    replicate_at: "{{ item.pg.replication.at }}"
-    target_per_day: "{{ item.pg.replication.per_day }}"
-    target_all_for: "{{ item.pg.replication.all_for }}"
-    blackout_start: "{{ item.pg.replication.blackout_start }}"
-    blackout_end: "{{ item.pg.replication.blackout_end }}"
-    fa_url: "{{ purefa_url }}"
-    api_token: "{{ purefa_api_token }}"
-  when:
-  - item.pg is defined
-  - item.pg.replication is defined
+# - name: Update protection group replication schedule
+#   purestorage.flasharray.purefa_pgsched:
+#     name: "{{ item.pg.name | default(item.name) }}"
+#     schedule: replication
+#     enabled: "{{ item.pg.replication.enabled }}"
+#     replicate_frequency: "{{ item.pg.replication.frequency }}"
+#     replicate_at: "{{ item.pg.replication.at }}"
+#     target_per_day: "{{ item.pg.replication.per_day }}"
+#     target_all_for: "{{ item.pg.replication.all_for }}"
+#     blackout_start: "{{ item.pg.replication.blackout_start }}"
+#     blackout_end: "{{ item.pg.replication.blackout_end }}"
+#     fa_url: "{{ purefa_url }}"
+#     api_token: "{{ purefa_api_token }}"
+#   when:
+#   - item.pg is defined
+#   - item.pg.replication is defined
 
-- name: Update protection group snapshot schedule
-  purestorage.flasharray.purefa_pgsched:
-    name: "{{ item.pg.name | default(item.name) }}"
-    schedule: snapshot
-    enabled: "{{ item.pg.snapshot.enabled }}"
-    snap_frequency: "{{ item.pg.snapshot.frequency }}"
-    snap_at: "{{ item.pg.snapshot.at }}"
-    per_day: "{{ item.pg.snapshot.per_day }}"
-    all_for: "{{ item.pg.snapshot.all_for }}"
-    fa_url: "{{ purefa_url }}"
-    api_token: "{{ purefa_api_token }}"
-  when:
-  - item.pg is defined
-  - item.pg.snapshot is defined
+# - name: Update protection group snapshot schedule
+#   purestorage.flasharray.purefa_pgsched:
+#     name: "{{ item.pg.name | default(item.name) }}"
+#     schedule: snapshot
+#     enabled: "{{ item.pg.snapshot.enabled }}"
+#     snap_frequency: "{{ item.pg.snapshot.frequency }}"
+#     snap_at: "{{ item.pg.snapshot.at }}"
+#     per_day: "{{ item.pg.snapshot.per_day }}"
+#     all_for: "{{ item.pg.snapshot.all_for }}"
+#     fa_url: "{{ purefa_url }}"
+#     api_token: "{{ purefa_api_token }}"
+#   when:
+#   - item.pg is defined
+#   - item.pg.snapshot is defined

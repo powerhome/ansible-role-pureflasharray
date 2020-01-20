@@ -144,8 +144,10 @@
 - name: Manage volume groups
   purestorage.flasharray.purefa_vg:
     name: "{{ item.name }}"
-    eradicate: "{{ item.eradicate | default(omit) }}"
-    state: "{{ item.state | default(omit) }}"
+    eradicate: "{{ item.eradicate | default('false') }}"
+    state: "{{ item.state | default('present') }}"
+    bw_qos: "{{ item.bw_qos | default(omit) }}"
+    iops_qos: "{{ item.iops_qos | default(omit) }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
   loop: "{{ purefa_volumegroups }}"
@@ -156,12 +158,11 @@
 - name: Manage volumes
   purestorage.flasharray.purefa_volume:
     name: "{{ item.0.name }}/{{ item.1.name }}"
-    size: "{{ item.1.size }}"
-    target: "{{ item.1.target | default(omit) }}"
-    overwrite: "{{ item.1.overwrite | default(omit) }}"
+    size: "{{ item.1.size | default(omit) }}"
     qos: "{{ item.1.qos | default(omit) }}"
-    eradicate: "{{ item.1.eradicate | default(omit) }}"
-    state: "{{ item.1.state | default(omit) }}"
+    iops_qos: "{{ item.1.iops_qos | default(omit) }}"
+    eradicate: "{{ item.1.eradicate | default('false') }}"
+    state: "{{ item.1.state | default('present') }}"
     fa_url: "{{ purefa_url }}"
     api_token: "{{ purefa_api_token }}"
   loop: "{{ purefa_volumegroups | subelements('volumes') }}"
