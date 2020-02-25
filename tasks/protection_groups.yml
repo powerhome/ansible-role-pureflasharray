@@ -1,0 +1,47 @@
+- name: Manage protection groups
+  purestorage.flasharray.purefa_pg:
+    pgroup: "{{ item.pg.name | default(item.name) }}"
+    target: "{{ item.pg.target | default(pgroup_target) }}"
+    volume: "{{ item.volumes | json_query('[].name') | map('regex_replace', '^(.*)$', item.name+'/\\1') | list }}" # list of volumes adding 'volumegroup/' as prefix
+    state: "{{ item.pg.state | default('present') }}"
+    eradicate: "{{ item.pg.eradicate | default('false') }}"
+    enabled: "{{ item.pg.enabled | default('true') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when: item.pg is defined
+
+- name: Update protection group replication schedule
+  purestorage.flasharray.purefa_pgsched:
+    name: "{{ item.pg.name | default(item.name) }}"
+    schedule: replication
+    enabled: "{{ item.pg.replication.enabled | default('true')}}"
+    state: "{{ item.pg.replication.state | default('present')}}"
+    replicate_frequency: "{{ item.pg.replication.frequency | default('3600') }}" # 1h
+    replicate_at: "{{ item.pg.replication.at | default(omit) }}"
+    target_per_day: "{{ item.pg.replication.per_day | default('1') }}" # 1day
+    target_days: "{{ item.pg.replication.for_days | default('7') }}" # 7days
+    target_all_for: "{{ item.pg.replication.retain_for | default('86400') }}" # 1day
+    blackout_start: "{{ item.pg.replication.blackout_start | default(omit) }}"
+    blackout_end: "{{ item.pg.replication.blackout_end | default(omit) }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when:
+  - item.pg is defined
+  - item.pg.replication is defined
+
+- name: Update protection group snapshot schedule
+  purestorage.flasharray.purefa_pgsched:
+    name: "{{ item.pg.name | default(item.name) }}"
+    schedule: snapshot
+    enabled: "{{ item.pg.snapshot.enabled | default('true')}}"
+    state: "{{ item.pg.snapshot.state | default('present')}}"
+    snap_frequency: "{{ item.pg.snapshot.frequency | default('3600') }}" # 1h
+    snap_at: "{{ item.pg.snapshot.at | default(omit) }}"
+    per_day: "{{ item.pg.snapshot.per_day | default('1')  }}" # 1day
+    days: "{{ item.pg.snapshot.for_days | default('7')  }}" # 7days
+    all_for: "{{ item.pg.snapshot.retain_for | default('86400')  }}" # 1day
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  when:
+  - item.pg is defined
+  - item.pg.snapshot is defined

@@ -127,3 +127,86 @@
   when: item not in array_info.purefa_info.config.smtp
   tags:
   - purefa_alerts
+
+- name: Manage replication connections
+  purestorage.flasharray.purefa_connect:
+    connection: "{{ item.connection | default('async') }}"
+    target_url: "{{ item.target_url }}"
+    target_api: "{{ item.target_api }}"
+    state: "{{ item.state | default('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_connections }}"
+  when: purefa_connections is defined
+  tags:
+  - purefa_connections
+
+- name: Manage volume groups
+  purestorage.flasharray.purefa_vg:
+    name: "{{ item.name }}"
+    eradicate: "{{ item.eradicate | default('false') }}"
+    state: "{{ item.state | default('present') }}"
+    bw_qos: "{{ item.bw_qos | default(omit) }}"
+    iops_qos: "{{ item.iops_qos | default(omit) }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_volumegroups }}"
+  when: purefa_volumegroups is defined
+  tags:
+  - purefa_volumegroups
+
+- name: Manage volumes
+  purestorage.flasharray.purefa_volume:
+    name: "{{ item.0.name }}/{{ item.1.name }}"
+    size: "{{ item.1.size | default(omit) }}"
+    qos: "{{ item.1.qos | default(omit) }}"
+    iops_qos: "{{ item.1.iops_qos | default(omit) }}"
+    eradicate: "{{ item.1.eradicate | default('false') }}"
+    state: "{{ item.1.state | default('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_volumegroups | subelements('volumes') }}"
+  when: purefa_volumegroups is defined
+  tags:
+  - purefa_volumes
+
+- name: Manage hosts
+  purestorage.flasharray.purefa_host:
+    host: "{{ item.1.name }}"
+    lun: "{{ item.1.lun | default(omit) }}"
+    iqn: "{{ item.1.iqn | default(omit) }}"   # iscsi: iSCSI
+    nqn: "{{ item.1.nqn | default(omit) }}"   # nvme: NVMe
+    wwns: "{{ item.1.wwns | default(omit) }}" # fc: FibreChannel
+    personality: "{{ item.1.personality | default(omit) }}"
+    preferred_array: "{{ item.1.preferred_array | default('delete') }}"
+    protocol: "{{ item.1.protocol | default(omit) }}" # iscsi, nvme, fc or mixed
+    state: "{{ item.1.state | default ('present') }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_hostgroups | subelements('hosts') }}"
+  when: purefa_hostgroups is defined
+  tags:
+  - purefa_hosts
+
+- name: Manage host groups
+  purestorage.flasharray.purefa_hg:
+    host: "{{ item.hosts | json_query('[].name') or omit }}"
+    hostgroup: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    volume: "{{ item.volumes | default(omit) }}"
+    fa_url: "{{ purefa_url }}"
+    api_token: "{{ purefa_api_token }}"
+  loop: "{{ purefa_hostgroups }}"
+  when: purefa_hostgroups is defined
+  tags:
+  - purefa_hostgroups
+
+- name: Manage protection groups
+  block:
+    - name: Include tasks to manage protection groups
+      include_tasks: protection_groups.yml
+      loop: "{{ purefa_volumegroups }}"
+  when:
+  - purefa_volumegroups is defined
+  tags:
+  - purefa_protectiongroups
