@@ -1,6 +1,8 @@
 Pure FlashArray
 ===============
 
+Requires Purity 5.2+
+
 Configure Pure FlashArray.
 
 To download the role you can use `ansible-galaxy`. For that create a file `requirements.yml` with the following content:
@@ -12,7 +14,7 @@ To download the role you can use `ansible-galaxy`. For that create a file `requi
   name: powerhome.purefa
 ```
 
-Afte that run the command:
+After that run the command:
 ```
 ansible-galaxy install -r requirements.yml
 ```
